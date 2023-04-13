@@ -1,0 +1,3 @@
+[submodule "SecondRepository"]
+	path = SecondRepository
+	url = git@github.com:gkrzysztof/SecondRepository.git
