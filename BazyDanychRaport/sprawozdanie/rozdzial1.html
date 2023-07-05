@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Rozdzial 1 &#8212; Sprawozdanie  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Rozdzial 2" href="rozdzial2.html" />
+    <link rel="prev" title="Sprawozdanie z zadania laboratoryjnego" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="rozdzial-1">
+<h1>Rozdzial 1<a class="headerlink" href="#rozdzial-1" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="planowanie-konserwacji">
+<h2>Planowanie konserwacji<a class="headerlink" href="#planowanie-konserwacji" title="Permalink to this headline">¶</a></h2>
+<p>Planowanie konserwacji obejmuje określenie harmonogramu w którym przeprowadzane będą działania mające na celu utrzymanie bazy danych w optymalnym stanie. To co trzeba mieć na uwadze podczas planowania konserwacji to:</p>
+<ul class="simple">
+<li><p>Określenie harmonogramu</p></li>
+<li><p>Tworzenie backupów</p></li>
+<li><p>Monitorowanie wydajności</p></li>
+<li><p>Optymalizacja danych</p></li>
+</ul>
+<p>Ważne jest, aby planowanie konserwacji było elastyczne i uwzględniało zmienne czynniki, takie jak obciążenie bazy danych, ważność danych, polityki bezpieczeństwa czy dostępność zasobów. Regularne przeglądy planu konserwacji i dostosowywanie go do zmieniających się potrzeb pomoże utrzymać bazę danych w optymalnym stanie i zminimalizować ryzyko awarii.</p>
+</section>
+<section id="uruchamianie-zatrzymywanie-i-restartowanie-serwera-bazy-danych">
+<h2>Uruchamianie, zatrzymywanie i restartowanie serwera bazy danych<a class="headerlink" href="#uruchamianie-zatrzymywanie-i-restartowanie-serwera-bazy-danych" title="Permalink to this headline">¶</a></h2>
+<p>Uruchamianie, zatrzymywanie i restartowanie serwera bazy danych są kluczowymi operacjami w zarządzaniu bazami danych. Aby uruchomić serwer bazy danych, należy wywołać odpowiednią komendę lub skrypt, który jest dostarczany wraz z systemem zarządzania bazą danych. W przypadku PostgreSQL, można użyć komendy pg_ctl start, której wywołanie inicjuje proces serwera i umożliwia klientom nawiązywanie połączenia z bazą danych. Aby zatrzymać ten serwer, należy użyć odpowiedniej komendy lub skryptu. Podobnie jak w przypadku uruchamiania, komenda może się różnić w zależności od DBMS. W PostgreSQL można użyć komendy <code class="docutils literal notranslate"><span class="pre">pg_ctl</span> <span class="pre">stop</span></code>. Wywołanie tej komendy powoduje zakończenie działania serwera bazy danych i rozłączenie wszystkich klientów. Restartowanie serwera bazy danych polega na zatrzymaniu i ponownym uruchomieniu serwera. Może być wykonywane w celu na przykład wczytania nowej konfiguracji, wdrożenia aktualizacji lub rozwiązania problemów. Aby zrestartować serwer bazy danych, można po prostu najpierw zatrzymać go, a następnie uruchomić ponownie, używając odpowiednich komend lub skryptów dostarczonych przez DBMS.</p>
+</section>
+<section id="proces-vacuum">
+<h2>Proces VACUUM<a class="headerlink" href="#proces-vacuum" title="Permalink to this headline">¶</a></h2>
+<p>Proces Vacuum odnosi się do operacji, które są wykonywane w celu zarządzania przestrzenią w bazach danych, zwłaszcza w systemach zarządzania bazami danych. Ma on na celu optymalizację wykorzystania miejsca na dysku poprzez np usuwanie martwych krotek, aktualizacja statystyk, reorganizacja danych. Częstotliwość i konfiguracja procesu vacuum zależy od charakterystyki danych i obciążenia systemu. Ważne jest, aby regularnie przeprowadzać procesy vacuum w celu utrzymania optymalnej wydajności bazy danych i zapobiegania nadmiernemu rozrostowi rozmiaru plików danych.
+Przykład wykonania komendy VACUUM to:
+<code class="docutils literal notranslate"><span class="pre">VACUUM</span></code> nazwa_tabeli;
+Komenda ta przeprowadzi proces czyszczący VACUUM na tabeli nazwa_tabeli.</p>
+</section>
+<section id="ograniczanie-i-rozlaczanie-uzytkownikow">
+<h2>Ograniczanie i rozłączanie użytkowników<a class="headerlink" href="#ograniczanie-i-rozlaczanie-uzytkownikow" title="Permalink to this headline">¶</a></h2>
+<p>Ograniczanie dostępu użytkowników polega na kontrolowaniu uprawnień, poziomu dostępu i operacji w bazie danych. Każdy użytkownik powinien mieć przypisane odpowiednie uprawnienia, które definiują, jakie czynności może wykonywać. To może obejmować np. uprawnienia administracyjne, uprawnienia specjalne. Rozłączanie użytkowników polega na przerwaniu połączenia między użytkownikiem a bazą danych. Może być wykonywane z różnych powodów, takich jak: Planowane prace konserwacyjne, niepożądane działania użytkownika, jeśli liczba aktywnych połączeń użytkowników przekracza określony limit.</p>
+</section>
+<section id="zapobieganie-nowym-polaczeniom">
+<h2>Zapobieganie nowym połączeniom<a class="headerlink" href="#zapobieganie-nowym-polaczeniom" title="Permalink to this headline">¶</a></h2>
+<p>Zapobieganie nowym połączeniom w bazach danych jest niekiedy wymagane w celu utrzymania kontroli nad dostępem do bazy danych lub w przypadku, gdy baza danych jest niedostępna z powodu różnych czynników. W większości systemów zarządzania bazami danych istnieją ustawienia konfiguracyjne, które kontrolują ilość jednoczesnych połączeń. Poprzez dostosowanie tych ustawień, można ograniczyć maksymalną liczbę jednoczesnych połączeń do jakiejkolwiek wartości. To uniemożliwi nowym użytkownikom nawiązywanie połączenia.</p>
+</section>
+<section id="schema-zastosowanie">
+<h2>SCHEMA - zastosowanie<a class="headerlink" href="#schema-zastosowanie" title="Permalink to this headline">¶</a></h2>
+<p>Termin SCHEMA odnosi się do logicznej struktury organizacji danych wewnątrz bazy danych. Schema definiuje sposób, w jaki dane są zorganizowane, jakie tabele i relacje istnieją między nimi, a także jakie ograniczenia i reguły dotyczą danych. Schemat umożliwia organizację danych w logiczne grupy, co ułatwia zarządzanie i zrozumienie struktury bazy danych. Wewnątrz schematu można tworzyć tabele, widoki, indeksy, procedury składowane itp., które odnoszą się do określonej funkcjonalności. Wykorzystanie schematów pozwala na separację danych na różne poziomy lub obszary. Na przykład w bazie danych można utworzyć schematy dla różnych modułów aplikacji, zespołów użytkowników lub klientów. Każdy schemat może mieć swoje tabele i obiekty, co pozwala na ograniczenie dostępu do określonych obszarów.
+Do stworzenia nowego schematu używamy komendy <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">SCHEMA</span></code> schemat, aby usunąć schemat używamy komendy <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">SCHEMA</span></code> schemat.</p>
+</section>
+<section id="zarzadzanie-transakcjami">
+<h2>Zarządzanie transakcjami<a class="headerlink" href="#zarzadzanie-transakcjami" title="Permalink to this headline">¶</a></h2>
+<p>Transakcje to logiczne jednostki operacji, które muszą zostać wykonane atomowo, czyli albo wszystkie operacje zostaną zatwierdzone i zastosowane do bazy danych, albo żadna z nich nie zostanie zastosowana. Transakcje posiadają cztery podstawowe właściwości, znane jako ACID:
+Atomowość (Atomicity): Transakcja jest jednostką atomową, co oznacza, że ​​wszystkie operacje w ramach transakcji zostaną wykonane lub żadna z nich nie zostanie wykonana. Nie ma pośrednich stanów. Jeśli wystąpi jakikolwiek błąd lub przerwanie, transakcja jest wycofywana, a zmiany nie są wprowadzane do bazy danych.
+Spójność (Consistency): Transakcje muszą zachować spójność danych w bazie. Oznacza to, że przed i po zastosowaniu transakcji dane muszą spełniać określone zasady integralności, reguły walidacji i ograniczenia danych.
+Izolacja (Isolation): Transakcje powinny być odizolowane od siebie nawzajem. Oznacza to, że operacje wykonywane przez jedną transakcję nie są widoczne dla innych transakcji, dopóki transakcja nie zostanie zatwierdzona. Izolacja chroni przed konfliktami i zapewnia spójność danych.
+Trwałość (Durability): Po zatwierdzeniu transakcji jej wyniki muszą być trwałe i odporne na awarie systemu. To oznacza, że ​​wprowadzone zmiany zostaną zachowane nawet w przypadku przerwania zasilania lub innego rodzaju awarii.
+Do rozpoczęcia nowej transakcji używamy komendy <code class="docutils literal notranslate"><span class="pre">BEGIN</span></code>, aby zapisać zmiany w transakcji używamy komendy <code class="docutils literal notranslate"><span class="pre">COMMIT</span></code>, do cofnięcia błędu służy komenda <code class="docutils literal notranslate"><span class="pre">ROLLBACK</span></code>.</p>
+</section>
+<section id="zarzadzanie-indeksami">
+<h2>Zarządzanie indeksami<a class="headerlink" href="#zarzadzanie-indeksami" title="Permalink to this headline">¶</a></h2>
+<p>Zarządzanie indeksami jest istotnym elementem optymalizacji wydajności wyszukiwania danych. Indeksy to struktury, które przyspieszają wyszukiwanie rekordów w tabelach poprzez tworzenie dodatkowych struktur umożliwiających bezpośredni dostęp do danych na podstawie wartości indeksowanych kolumn. Indeksy są tworzone na podstawie jednej lub kilku kolumn w tabelach. Przez indeksowanie często używanych kolumn można znacznie przyspieszyć operacje wyszukiwania danych. Istnieje wiele rodzajów indeksów, które różnią się sposobem organizacji danych i sposobem wykorzystania w różnych operacjach.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Sprawozdanie</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Spis Treści:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Rozdzial 1</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#planowanie-konserwacji">Planowanie konserwacji</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#uruchamianie-zatrzymywanie-i-restartowanie-serwera-bazy-danych">Uruchamianie, zatrzymywanie i restartowanie serwera bazy danych</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proces-vacuum">Proces VACUUM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ograniczanie-i-rozlaczanie-uzytkownikow">Ograniczanie i rozłączanie użytkowników</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zapobieganie-nowym-polaczeniom">Zapobieganie nowym połączeniom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#schema-zastosowanie">SCHEMA - zastosowanie</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zarzadzanie-transakcjami">Zarządzanie transakcjami</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zarzadzanie-indeksami">Zarządzanie indeksami</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rozdzial2.html">Rozdzial 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rozdzial3.html">Rozdzial 3</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Sprawozdanie z zadania laboratoryjnego</a></li>
+      <li>Next: <a href="rozdzial2.html" title="next chapter">Rozdzial 2</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Krzysztof Gora.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/rozdzial1.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

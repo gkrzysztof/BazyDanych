@@ -1,0 +1,24 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Plik pg_hba.conf:
+=========================================
+Plik pg_hba.conf definiuje zasady uwierzytelniania hostów i użytkowników bazy danych. Kontroluje, jakie połączenia są akceptowane i jakie uwierzytelnianie jest stosowane. Poniżej przedstawiamy kilka podstawowych konfiguracji w tym pliku:
+
+* host: Określa zasady uwierzytelniania dla połączeń TCP/IP.
+* local: Określa zasady uwierzytelniania dla połączeń lokalnych (UNIX socket).
+* hostssl: Określa zasady uwierzytelniania dla połączeń TCP/IP z użyciem SSL.
+* hostnossl: Określa zasady uwierzytelniania dla połączeń TCP/IP bez użycia SSL.
+
+.. note:: 
+   Dla każdej reguły zdefiniowanej w pg_hba.conf można określić adresy IP, maski podsieci, nazwy hostów, nazwy baz danych, nazwy użytkowników oraz metody uwierzytelniania.
+
+
+
+.. toctree::
+   :maxdepth: 5
+   :caption: Contents:
+   
+

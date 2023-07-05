@@ -1,0 +1,3 @@
+Wstęp
+^^^^^^
+Sprawozdanie z zadania labratoryjnego na kurs Bazy Danych 1.

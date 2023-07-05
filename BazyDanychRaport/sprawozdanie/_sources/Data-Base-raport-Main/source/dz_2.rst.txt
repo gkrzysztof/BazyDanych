@@ -1,0 +1,27 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Aplikacja do kontroli bazy danych
+========================================
+
+W funkcji main zostały dodane instrukcje: 
+
+1. Opcja "1" odpowiada za utowrzenie tabel w PostgreSQL. Program zapyta nas czy chcemy utworzyć tabelę "pomiary", "adresy", czy obie
+
+2. Opcja "2" odpowiada za usunięcie tabel z PostgreSQL. Program zapyta nas czy chcemy usunąć tabelę "pomiary", "adresy", czy obie
+
+3. Opcja "3" odpowiada za wgranie przykładowych danych do PostgreSQL. Program zapyta nas czy chcemy dodać danę do tabeli "pomiary", "adresy", czy każdej z nich
+
+4. Opcja "4" odpowiada za usunięcie danych z tabeli w PostgreSQL. Program zapyta nas czy chcemy usunąć dane z tabeli "pomiary", "adresy", czy z każdej z nich
+
+5. Opcja "5" odpowiada za wgranie danych z pliku csv do PostgreSQL.
+
+6. Opcja "0" odpowiada za wyjście z programu
+
+.. toctree::
+   :maxdepth: 5
+   :caption: Contents:
+   
+

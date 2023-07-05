@@ -1,0 +1,339 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Aplikacji do kontroli bazy danych
+=========================================
+
+1. **create_table_adresy(conn)**
+
+Ta funkcja "create_table_adresy" służy do tworzenia tabeli "adresy" w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.
+
+
+.. code:: python
+
+   def create_table_adresy(conn):
+    sql_command = """CREATE TABLE IF NOT EXISTS public.adresy
+   (
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    ulica text COLLATE pg_catalog."default" NOT NULL,
+    numer_budynku integer NOT NULL,
+    numer_mieszkania integer NOT NULL,
+    CONSTRAINT adresy_pkey PRIMARY KEY (id)
+   );"""
+    cur = conn.cursor()
+    cur.execute(sql_command)
+    conn.commit()
+    cur.close()
+    print("Tabela adresy utworzona z sukcesem")
+
+
+2. **create_table_pomiary(conn)**
+
+Ta funkcja "create_table_pomiary" służy do tworzenia tabeli "pomiary" w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def create_table_pomiary(conn):
+    sql_command = """CREATE TABLE IF NOT EXISTS public.pomiary
+   (
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    pomiar integer NOT NULL,
+    data date NOT NULL,
+    id_adresu integer NOT NULL,
+    CONSTRAINT pomiary_pkey PRIMARY KEY (id),
+    CONSTRAINT id_adresu FOREIGN KEY (id_adresu)
+        REFERENCES public.adresy (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+   );"""
+    cur = conn.cursor()
+    cur.execute(sql_command)
+    conn.commit()
+    cur.close()
+    print("Tabela pomiary utworzona z sukcesem")
+
+
+3. **delete_table_adresy(conn)**
+
+Ta funkcja "delete_table_adresy" służy do usuwania tabeli "adresy" z bazy danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def delete_table_adresy(conn):
+    sql_command = """
+        DROP TABLE IF EXISTS public."adresy";"""
+    cur = conn.cursor()
+    cur.execute(sql_command)
+    conn.commit()
+    cur.close()
+    print("Tabela adresy usunięta z sukcesem")
+
+
+4. **delete_table_pomiary(conn)**
+
+Ta funkcja "delete_table_pomiary" służy do usuwania tabeli "pomiary" z bazy danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def delete_table_pomiary(conn):
+    sql_command = """
+        DROP TABLE IF EXISTS public."pomiary";"""
+    cur = conn.cursor()
+    cur.execute(sql_command)
+    conn.commit()
+    cur.close()
+    print("Tabela pomiary usunięta z sukcesem")
+
+
+5. **insert_to_adresy(conn)**
+
+Ta funkcja "insert_to_adresy" służy do wprowadzania danych z pliku CSV do tabeli "adresy" w bazie danych. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def insert_to_adresy(conn):
+    with open("adresy_temp.csv", 'r') as file:
+        reader = csv.reader(file)
+        cur = conn.cursor()
+        for row in reader:
+            data_tuple = tuple(row)
+            cur.execute(
+                """INSERT INTO adresy (ulica,numer_budynku,numer_mieszkania)
+                VALUES (%s,%s,%s);""",
+                data_tuple
+            )
+            conn.commit()
+    cur.close()
+    print("Testowe dane wprowadzone do tabeli adresy z sukcesem")
+
+6. **insert_to_pomiary(conn)**
+
+Ta funkcja "insert_to_pomiary" służy do wprowadzania danych z pliku CSV do tabeli "pomiary" w bazie danych. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def insert_to_pomiary(conn):
+    with open("pomiary_temp.csv",'r') as file:
+        reader = csv.reader(file)
+        i = 0
+        for row in reader:
+            cur = conn.cursor()
+            data_tupla = tuple(row)
+            data_tupla_adres = data_tupla[:3]
+            data_tupla_pomiar = data_tupla[3:5]
+            cur.execute("""SELECT * FROM adresy WHERE ulica = %s AND numer_budynku = %s AND numer_mieszkania = %s;""",data_tupla_adres)
+            id = cur.fetchone()[0]
+            data_tupla_all = data_tupla_pomiar + (id,)
+            cur.execute(
+                """INSERT INTO pomiary (pomiar,data,id_adresu)
+                VALUES (%s,%s,%s);""",
+                data_tupla_all
+            )
+            conn.commit()
+        cur.close()
+        print("Testowe dane wprowadzone do tabeli pomiary z sukcesem")
+
+7. **clear_table_adresy(conn)**
+
+Ta funkcja "clear_table_adresy" służy do usuwania wszystkich danych z tabeli "adresy" w bazie danych PostgreSQL, zachowując strukturę tabeli. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def clear_table_adresy(conn):
+    sql_command = """
+        TRUNCATE TABLE adresy CASCADE;"""
+    cur = conn.cursor()
+    cur.execute(sql_command)
+    conn.commit()
+    cur.close()
+    print("Dane z tabeli adresy usunięte z sukcesem")
+
+8. **clear_table_pomiary(conn)**
+
+Ta funkcja "clear_table_pomiary" służy do usuwania wszystkich danych z tabeli "pomiary" w bazie danych PostgreSQL, zachowując strukturę tabeli. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def clear_table_pomiary(conn):
+    sql_command = """
+        TRUNCATE TABLE pomiary CASCADE;"""
+    cur = conn.cursor()
+    cur.execute(sql_command)
+    conn.commit()
+    cur.close()
+    print("Dane z tabeli pomiary usunięte z sukcesem")
+
+9. **insert_data_from_sqlite(conn)**
+
+Ta funkcja "insert_data_from_sqlite" służy do wprowadzania danych z pliku CSV z aplikacji do pomiarów do tabeli "pomiary" w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def insert_data_from_sqlite(conn):
+    with open("pomiary.csv",'r') as file:
+        reader = csv.reader(file)
+        i = 0
+        for row in reader:
+            cur = conn.cursor()
+            data_tupla = tuple(row)
+            data_tupla_adres = data_tupla[:3]
+            data_tupla_pomiar = data_tupla[3:5]
+            cur.execute("""SELECT * FROM adresy WHERE ulica = %s AND numer_budynku = %s AND numer_mieszkania = %s;""",data_tupla_adres)
+            id = cur.fetchone()[0]
+            data_tupla_all = data_tupla_pomiar + (id,)
+            cur.execute(
+                """INSERT INTO pomiary (pomiar,data,id_adresu)
+                VALUES (%s,%s,%s);""",
+                data_tupla_all
+            )
+            conn.commit()
+        cur.close()
+        print("Dane z pliku csv wprowadzone z sukcesem")
+
+10. **insert_from_sqlite(conn)**
+
+Ta funkcja "insert_from_sqlite" służy do wywołania funkcji "insert_data_from_sqlite" w celu wprowadzenia danych z pliku CSV do tabeli "pomiary" w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def insert_from_sqlite(conn):
+    insert_data_from_sqlite(conn)
+
+11. **clear_tables(conn)**
+
+Ta funkcja "clear_tables" służy do czyszczenia zawartości tabel "adresy" i "pomiary" w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def clear_tables(conn):
+    clear_table_adresy(conn)
+    clear_table_pomiary(conn)
+
+12. **insert_temp_data(conn)**
+
+Ta funkcja "insert_temp_data" służy do wprowadzenia przykładowych danych do tabel "adresy" i "pomiary" w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def insert_temp_data(conn):
+    insert_to_adresy(conn)
+    insert_to_pomiary(conn)
+
+13. **create_tables(conn)**
+
+Ta funkcja "create_tables" służy do tworzenia tabel "adresy" i "pomiary" w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def create_tables(conn):
+    create_table_adresy(conn)
+    create_table_pomiary(conn)
+
+
+14. **delete_tables(conn)**
+
+Ta funkcja "delete_tables" służy do usuwania tabel "pomiary" i "adresy" z bazy danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.
+
+.. code:: python
+
+   def delete_tables(conn):
+    delete_table_pomiary(conn)
+    delete_table_adresy(conn)
+
+
+15. **program(conn, wybor)**
+
+Funkcja "program" jest głównym punktem wejścia programu. Przyjmuje obiekt połączenia (conn) i opcję wyboru (wybor) jako argumenty. Na podstawie opcji wyboru, funkcja "program" wykonuje odpowiednie działania
+
+.. code:: python
+
+   def program(conn, wybor):
+    match wybor:
+        case '1':
+            print("1. Utwórz tabele adresy")
+            print("2. Utwórz tabele pomiary")
+            print("3. Utwórz obie tabele")
+            tab = input("Wybierz opcję: ")
+            if(tab == '1'):
+                create_table_adresy(conn)
+            if(tab == '2'):
+                create_table_pomiary(conn)
+            if(tab == '3'):
+                create_tables(conn)
+        case '2':
+            print("1. Usuń tabele pomiary")
+            print("2. Usuń tabele adresy")
+            print("3. Usuń obie tabele")
+            tab = input("Wybierz opcję: ")
+            if(tab == '1'):
+                delete_table_pomiary(conn)
+            if(tab == '2'):
+                delete_table_adresy(conn)
+            if(tab == '3'):
+                delete_tables(conn)
+        case '3':
+            print("1. Wgraj dane do tabeli adresy")
+            print("2. Wgraj dane do tabeli pomiary")
+            print("3. Wgraj dane do wszystkich tabel")
+            tab = input("Wybierz opcję: ")
+            if(tab == '1'):
+                insert_to_adresy(conn)
+            if(tab == '2'):
+                insert_to_pomiary(conn)
+            if(tab == '3'):
+                insert_temp_data(conn)
+        case '4':
+            print("1. Usuń dane z tabeli adresy")
+            print("2. Usuń dane z tabeli pomiary")
+            print("3. Usuń dane ze wszystkich tabel")
+            tab = input("Wybierz opcję: ")
+            if(tab == '1'):
+                clear_table_adresy(conn)
+            if(tab == '2'):
+                clear_table_pomiary(conn)
+            if(tab == '3'):
+                clear_tables(conn)
+        case '5':
+            insert_data_from_sqlite(conn)
+
+
+
+16. **main()**
+
+W funkcji main został dodany kod, który wczytuje dane dotyczące połączenia z bazą danych z pliku JSON o nazwie "database_creds.json". Następnie, na podstawie tych danych, nawiązywane jest połączenie z bazą danych PostgreSQL. Po nawiązaniu połączenia, w pętli while wyświetlane są opcje menu, a użytkownik ma możliwość wyboru odpowiedniej opcji
+
+.. code:: python
+
+   def main():
+
+    with open("database_creds.json") as db_con_file:
+        creds = simplejson.loads(db_con_file.read())
+   
+    conn = psycopg.connect(
+        host=creds['host_name'],
+        user=creds['user_name'],
+        dbname=creds['db_name'],
+        password=creds['password'],
+        port=creds['port_number'])
+    while True:
+        print("1. Utwórz tabelę")
+        print("2. Usuń tabelę")
+        print("3. Wgraj testowe dane")
+        print("4. Usuń dane z tabeli")
+        print("5. Wgraj dane z pliku csv")
+        print("0. Wyjdź")
+        wybor = input("Wybierz opcję: ")
+        if(wybor == '0'):
+            break
+        program(conn,wybor)
+    conn.close()  
+
+
+
+.. toctree::
+   :maxdepth: 5
+   :caption: Contents:
+   
+

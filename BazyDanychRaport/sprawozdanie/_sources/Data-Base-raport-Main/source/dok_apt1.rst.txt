@@ -1,0 +1,185 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Aplikacji do pomiarów
+=========================================
+
+1. **create_connection(db_file)**
+
+Ta funkcja tworzy połączenie do bazy danych SQLite, przyjmując nazwę pliku bazy danych jako argument. Funkcja próbuje nawiązać połączenie i drukuje wersję SQLite, jeśli połączenie jest udane. Jeśli wystąpi błąd podczas nawiązywania połączenia, funkcja drukuje ten błąd. Na końcu funkcja zwraca obiekt połączenia lub wartość None, jeśli połączenie nie zostało ustanowione.
+
+
+.. code:: python
+
+   def create_connection(db_file):
+    """ create a database connection to a SQLite database """
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+        print(sqlite3.version)
+    except Error as e:
+        print(e)
+    return conn
+
+
+2. **create_table(conn, create_table_sql)**
+
+Ta funkcja tworzy tabelę w bazie danych przy użyciu podanego polecenia SQL. Przyjmuje dwa argumenty: obiekt połączenia (conn) oraz polecenie CREATE TABLE w formie tekstu (create_table_sql). Następnie funkcja próbuje utworzyć kursor (c) na podstawie połączenia i wykonuje polecenie SQL na tym kursorze. Jeśli wystąpi błąd podczas wykonywania polecenia, funkcja drukuje ten błąd. Funkcja nie zwraca żadnej wartości.
+
+.. code:: python
+
+   def create_table(conn, create_table_sql):
+    """ create a table from the create_table_sql statement
+    :param conn: Connection object
+    :param create_table_sql: a CREATE TABLE statement
+    :return:
+    """
+    try:
+        c = conn.cursor()
+        c.execute(create_table_sql)
+    except Error as e:
+        print(e)
+
+
+3. **select_all_data(conn)**
+
+Ta funkcja wykonuje zapytanie SQL "SELECT * FROM pomiary" na podanym obiekcie połączenia (conn). Następnie tworzy kursor (cur) na podstawie tego połączenia i wykonuje zapytanie na tym kursorze. Wyniki zapytania są pobierane przy użyciu metody fetchall() i przechowywane w zmiennej "rows". Następnie funkcja iteruje przez każdy wiersz wynikowy i drukuje go na ekranie. Po każdym wierszu, funkcja oczekuje na wciśnięcie klawisza Enter przez użytkownika, aby kontynuować wyświetlanie kolejnych wierszy. Funkcja nie zwraca żadnej wartości.
+
+.. code:: python
+
+   def select_all_data(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM pomiary")
+
+    rows = cur.fetchall()
+
+    for row in rows:
+        print(row)
+        input("Dalej? ")
+
+
+4. **insert_data_db(conn, pomiar)**
+
+Ta funkcja służy do wstawiania danych do bazy danych SQLite. Przyjmuje dwa argumenty: obiekt połączenia (conn) oraz dane pomiaru (pomiar). Funkcja tworzy polecenie SQL za pomocą parametryzowanego zapytania wstawiania danych. Następnie tworzy kursor (cur) na podstawie połączenia i wykonuje zapytanie SQL, przekazując dane pomiaru do zapytania. Po wykonaniu zapytania, zmiany są zatwierdzane w bazie danych przy użyciu metody commit(). Na koniec funkcja zwraca identyfikator ostatnio wstawionego wiersza w bazie danych za pomocą cur.lastrowid.
+
+.. code:: python
+
+   def insert_data_db(conn, pomiar):
+    sql = ''' INSERT INTO pomiary(ulica,numer_budynku,numer_mieszkania,pomiar,data_pomiaru)
+                  VALUES(?,?,?,?,?) '''
+    cur = conn.cursor()
+    cur.execute(sql, pomiar)
+    conn.commit()
+    return cur.lastrowid
+
+
+5. **insert_data_user(conn)**
+
+Ta funkcja służy do pobierania danych od użytkownika i wstawiania ich do bazy danych przy użyciu funkcji "insert_data_db". Funkcja wykorzystuje funkcję "input" do pobrania wartości od użytkownika dla kolejnych pól: ulicy, numeru budynku, numeru mieszkania, pomiaru licznika i daty pomiaru. Następnie tworzy krotkę "pomiar" zawierającą pobrane wartości, a następnie wywołuje funkcję "insert_data_db", przekazując obiekt połączenia (conn) oraz krotkę "pomiar".
+
+.. code:: python
+
+   def insert_data_user(conn):
+    ulica = input("Podaj ulicę: ")
+    nr_budynku = input("Podaj numer budynku: ")
+    nr_mieszkania = input("Podaj numer mieszkania: ")
+    pomiar = input("Podaj pomiar licznika: ")
+    data = input("Podaj date pomiaru(r-m-d): ")
+    pomiar = (ulica,nr_budynku,nr_mieszkania, int(pomiar), data)
+    insert_data_db(conn, pomiar)
+
+6. **delete_data(conn,id)**
+
+Ta funkcja służy do usuwania danych z bazy danych SQLite. Przyjmuje dwa argumenty: obiekt połączenia (conn) oraz identyfikator (id) wiersza, który ma zostać usunięty. Funkcja tworzy polecenie SQL DELETE, które usuwa wiersz z tabeli "pomiary" na podstawie podanego identyfikatora. Następnie tworzy kursor (cur) na podstawie połączenia i wykonuje zapytanie SQL, przekazując identyfikator jako parametr w krotce. Po wykonaniu zapytania, zmiany są zatwierdzane w bazie danych przy użyciu metody commit().
+
+.. code:: python
+
+   def delete_data(conn,id):
+    sql = "DELETE FROM pomiary WHERE id=?"
+    cur = conn.cursor()
+    cur.execute(sql,(id,))
+    conn.commit()
+
+7. **save_csv(conn)**
+
+Ta funkcja służy do zapisywania danych z bazy danych do pliku CSV. Funkcja wykonuje zapytanie SQL "SELECT * FROM pomiary" na podanym obiekcie połączenia (conn). Następnie pobiera wszystkie wiersze wynikowe i zapisuje je do pliku CSV o nazwie "pomiary.csv". W każdej iteracji, funkcja tworzy nowy wiersz "new_row", który zawiera dane z wiersza wynikowego, z pominięciem pierwszej kolumny (prawdopodobnie identyfikatora). Następnie, za pomocą obiektu writer z modułu csv, zapisuje wiersz do pliku CSV. Po zapisaniu wszystkich wierszy, funkcja drukuje komunikat "Dane zapisane" i oczekuje na wciśnięcie klawisza Enter przez użytkownika, aby kontynuować.
+
+.. code:: python
+
+   def save_csv(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM pomiary")
+
+    rows = cur.fetchall()
+    with open('pomiary.csv','a', newline='\n') as file:
+            writer = csv.writer(file)
+    for row in rows:
+        new_row = row[1:]
+        with open('pomiary.csv','a', newline='\n') as file:
+            writer = csv.writer(file)
+            writer.writerow(new_row)
+    print("Dane zapisane")
+    input("Dalej? ")
+
+8. **program(options, conn)**
+
+Ta funkcja "program" służy do sterowania programem na podstawie opcji wybranych przez użytkownika. Przyjmuje dwa argumenty: opcje (options) i obiekt połączenia (conn) do bazy danych.
+
+.. code:: python
+
+   def program(options, conn):
+    match options:
+        case 1:
+            next_data = "tak"
+            while next_data == "tak":
+                insert_data_user(conn)
+                print("Następne dane?")
+                next_data = input("Tak/Nie: ")
+        case 2:
+            select_all_data(conn)
+        case 3:
+            id = input("Podaj id: ")
+            delete_data(conn,id)
+            print("Dane usunięte")
+            input("Dalej? ")
+        case 4:
+            save_csv(conn)
+
+9. **main()**
+
+Ta funkcja "main" jest główną funkcją programu. Inicjalizuje bazę danych, tworzy tabelę "pomiary" (jeśli jeszcze nie istnieje), a następnie uruchamia pętlę, w której użytkownik może wybierać różne opcje.
+
+.. code:: python
+
+   def main():
+    database = "pomiary_temp.db"
+    conn = create_connection(database)
+    sql_create_pomiary_table = """ CREATE TABLE IF NOT EXISTS pomiary (
+                                            id integer PRIMARY KEY,
+                                            ulica text NOT NULL,
+                                            numer_budynku int NOT NULL,
+                                            numer_mieszkania int NOT NULL,
+                                            pomiar int NOT NULL,
+                                            data_pomiaru date NOT NULL
+                                        ); """
+    create_table(conn, sql_create_pomiary_table)
+    while True:
+        print("1. Wprowadź dane")
+        print("2. Sprawdź dane")
+        print("3. Usuń wybrane dane")
+        print("4. Zapisz dane do pliku csv")
+        print("5. Wyjdź")
+        option = int(input("Wybierz opcję: "))
+        if option == 5:
+            break
+        program(option, conn)
+
+
+
+.. toctree::
+   :maxdepth: 5
+   :caption: Contents:
+   
+

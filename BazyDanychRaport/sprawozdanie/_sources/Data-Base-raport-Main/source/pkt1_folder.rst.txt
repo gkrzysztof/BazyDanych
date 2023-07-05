@@ -1,0 +1,30 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Katalogi
+========================================
+
+.. toctree::
+   :maxdepth: 5
+   :caption: Contents:
+
+
+- **base** - Podkatalog zawierający podkatalogi dla poszczególnych baz danych
+- **global** - Podkatalog zawierający tabele obejmujące cały klaster, takie jak pg_database
+- **pg_commit_ts** - Podkatalog zawierający dane znacznika czasu zatwierdzenia transakcji
+- **pg_dynshmem** - Podkatalog zawierający pliki używane przez dynamiczny podsystem pamięci współużytkowanej
+- **pg_logical** - Podkatalog zawierający dane o stanie do dekodowania logicznego
+- **pg_multixact** - Podkatalog zawierający dane o statusie wielu transakcji
+- **pg_notify** - Podkatalog zawierający dane o statusie LISTEN/NOTIFY
+- **pg_replslot** - Podkatalog zawierający dane replikacji
+- **pg_serial** - Podkatalog zawierający informacje o zatwierdzonych transakcjach możliwych do serializacji
+- **pg_snapshots** - Podkatalog zawierający wyeksportowane snapshota
+- **pg_stat** - Podkatalog zawierający stałe pliki dla podsystemu statystyki
+- **pg_stat_tmp** - Podkatalog zawierający pliki tymczasowe dla podsystemu statystyki
+- **pg_subtrans** - Podkatalog zawierający dane o stanie podrzędnej transakcji
+- **pg_tblspc** - Podkatalog zawierający dowiązania symboliczne do obszarów tabel
+- **pg_twophase** - Podkatalog zawierający pliki stanów dla przygotowanych transakcji
+- **pg_wal** - Podkatalog zawierający pliki WAL
+- **pg_xact** - Podkatalog zawierający dane o statusie zatwierdzenia transakcji

@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Aplikacji do pomiarów &#8212; Sprawozdanie  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="aplikacji-do-pomiarow">
+<h1>Aplikacji do pomiarów<a class="headerlink" href="#aplikacji-do-pomiarow" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li><p><strong>create_connection(db_file)</strong></p></li>
+</ol>
+<p>Ta funkcja tworzy połączenie do bazy danych SQLite, przyjmując nazwę pliku bazy danych jako argument. Funkcja próbuje nawiązać połączenie i drukuje wersję SQLite, jeśli połączenie jest udane. Jeśli wystąpi błąd podczas nawiązywania połączenia, funkcja drukuje ten błąd. Na końcu funkcja zwraca obiekt połączenia lub wartość None, jeśli połączenie nie zostało ustanowione.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_connection</span><span class="p">(</span><span class="n">db_file</span><span class="p">):</span>
+ <span class="sd">&quot;&quot;&quot; create a database connection to a SQLite database &quot;&quot;&quot;</span>
+ <span class="n">conn</span> <span class="o">=</span> <span class="kc">None</span>
+ <span class="k">try</span><span class="p">:</span>
+     <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_file</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="n">sqlite3</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+ <span class="k">except</span> <span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+ <span class="k">return</span> <span class="n">conn</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>create_table(conn, create_table_sql)</strong></p></li>
+</ol>
+<p>Ta funkcja tworzy tabelę w bazie danych przy użyciu podanego polecenia SQL. Przyjmuje dwa argumenty: obiekt połączenia (conn) oraz polecenie CREATE TABLE w formie tekstu (create_table_sql). Następnie funkcja próbuje utworzyć kursor (c) na podstawie połączenia i wykonuje polecenie SQL na tym kursorze. Jeśli wystąpi błąd podczas wykonywania polecenia, funkcja drukuje ten błąd. Funkcja nie zwraca żadnej wartości.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_table</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">create_table_sql</span><span class="p">):</span>
+ <span class="sd">&quot;&quot;&quot; create a table from the create_table_sql statement</span>
+<span class="sd"> :param conn: Connection object</span>
+<span class="sd"> :param create_table_sql: a CREATE TABLE statement</span>
+<span class="sd"> :return:</span>
+<span class="sd"> &quot;&quot;&quot;</span>
+ <span class="k">try</span><span class="p">:</span>
+     <span class="n">c</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+     <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">create_table_sql</span><span class="p">)</span>
+ <span class="k">except</span> <span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>select_all_data(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja wykonuje zapytanie SQL “SELECT * FROM pomiary” na podanym obiekcie połączenia (conn). Następnie tworzy kursor (cur) na podstawie tego połączenia i wykonuje zapytanie na tym kursorze. Wyniki zapytania są pobierane przy użyciu metody fetchall() i przechowywane w zmiennej “rows”. Następnie funkcja iteruje przez każdy wiersz wynikowy i drukuje go na ekranie. Po każdym wierszu, funkcja oczekuje na wciśnięcie klawisza Enter przez użytkownika, aby kontynuować wyświetlanie kolejnych wierszy. Funkcja nie zwraca żadnej wartości.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">select_all_data</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM pomiary&quot;</span><span class="p">)</span>
+
+ <span class="n">rows</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+ <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+     <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+     <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Dalej? &quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p><strong>insert_data_db(conn, pomiar)</strong></p></li>
+</ol>
+<p>Ta funkcja służy do wstawiania danych do bazy danych SQLite. Przyjmuje dwa argumenty: obiekt połączenia (conn) oraz dane pomiaru (pomiar). Funkcja tworzy polecenie SQL za pomocą parametryzowanego zapytania wstawiania danych. Następnie tworzy kursor (cur) na podstawie połączenia i wykonuje zapytanie SQL, przekazując dane pomiaru do zapytania. Po wykonaniu zapytania, zmiany są zatwierdzane w bazie danych przy użyciu metody commit(). Na koniec funkcja zwraca identyfikator ostatnio wstawionego wiersza w bazie danych za pomocą cur.lastrowid.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">insert_data_db</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">pomiar</span><span class="p">):</span>
+ <span class="n">sql</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39; INSERT INTO pomiary(ulica,numer_budynku,numer_mieszkania,pomiar,data_pomiaru)</span>
+<span class="s1">               VALUES(?,?,?,?,?) &#39;&#39;&#39;</span>
+ <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="n">pomiar</span><span class="p">)</span>
+ <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+ <span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">lastrowid</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p><strong>insert_data_user(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja służy do pobierania danych od użytkownika i wstawiania ich do bazy danych przy użyciu funkcji “insert_data_db”. Funkcja wykorzystuje funkcję “input” do pobrania wartości od użytkownika dla kolejnych pól: ulicy, numeru budynku, numeru mieszkania, pomiaru licznika i daty pomiaru. Następnie tworzy krotkę “pomiar” zawierającą pobrane wartości, a następnie wywołuje funkcję “insert_data_db”, przekazując obiekt połączenia (conn) oraz krotkę “pomiar”.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">insert_data_user</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">ulica</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj ulicę: &quot;</span><span class="p">)</span>
+ <span class="n">nr_budynku</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj numer budynku: &quot;</span><span class="p">)</span>
+ <span class="n">nr_mieszkania</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj numer mieszkania: &quot;</span><span class="p">)</span>
+ <span class="n">pomiar</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj pomiar licznika: &quot;</span><span class="p">)</span>
+ <span class="n">data</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj date pomiaru(r-m-d): &quot;</span><span class="p">)</span>
+ <span class="n">pomiar</span> <span class="o">=</span> <span class="p">(</span><span class="n">ulica</span><span class="p">,</span><span class="n">nr_budynku</span><span class="p">,</span><span class="n">nr_mieszkania</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">pomiar</span><span class="p">),</span> <span class="n">data</span><span class="p">)</span>
+ <span class="n">insert_data_db</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">pomiar</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li><p><strong>delete_data(conn,id)</strong></p></li>
+</ol>
+<p>Ta funkcja służy do usuwania danych z bazy danych SQLite. Przyjmuje dwa argumenty: obiekt połączenia (conn) oraz identyfikator (id) wiersza, który ma zostać usunięty. Funkcja tworzy polecenie SQL DELETE, które usuwa wiersz z tabeli “pomiary” na podstawie podanego identyfikatora. Następnie tworzy kursor (cur) na podstawie połączenia i wykonuje zapytanie SQL, przekazując identyfikator jako parametr w krotce. Po wykonaniu zapytania, zmiany są zatwierdzane w bazie danych przy użyciu metody commit().</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">delete_data</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="nb">id</span><span class="p">):</span>
+ <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;DELETE FROM pomiary WHERE id=?&quot;</span>
+ <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,(</span><span class="nb">id</span><span class="p">,))</span>
+ <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="7">
+<li><p><strong>save_csv(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja służy do zapisywania danych z bazy danych do pliku CSV. Funkcja wykonuje zapytanie SQL “SELECT * FROM pomiary” na podanym obiekcie połączenia (conn). Następnie pobiera wszystkie wiersze wynikowe i zapisuje je do pliku CSV o nazwie “pomiary.csv”. W każdej iteracji, funkcja tworzy nowy wiersz “new_row”, który zawiera dane z wiersza wynikowego, z pominięciem pierwszej kolumny (prawdopodobnie identyfikatora). Następnie, za pomocą obiektu writer z modułu csv, zapisuje wiersz do pliku CSV. Po zapisaniu wszystkich wierszy, funkcja drukuje komunikat “Dane zapisane” i oczekuje na wciśnięcie klawisza Enter przez użytkownika, aby kontynuować.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save_csv</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM pomiary&quot;</span><span class="p">)</span>
+
+ <span class="n">rows</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+ <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;pomiary.csv&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+         <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+ <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+     <span class="n">new_row</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;pomiary.csv&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+         <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+         <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dane zapisane&quot;</span><span class="p">)</span>
+ <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Dalej? &quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="8">
+<li><p><strong>program(options, conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “program” służy do sterowania programem na podstawie opcji wybranych przez użytkownika. Przyjmuje dwa argumenty: opcje (options) i obiekt połączenia (conn) do bazy danych.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">program</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">conn</span><span class="p">):</span>
+ <span class="k">match</span> <span class="n">options</span><span class="p">:</span>
+     <span class="k">case</span> <span class="mi">1</span><span class="p">:</span>
+         <span class="n">next_data</span> <span class="o">=</span> <span class="s2">&quot;tak&quot;</span>
+         <span class="k">while</span> <span class="n">next_data</span> <span class="o">==</span> <span class="s2">&quot;tak&quot;</span><span class="p">:</span>
+             <span class="n">insert_data_user</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Następne dane?&quot;</span><span class="p">)</span>
+             <span class="n">next_data</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Tak/Nie: &quot;</span><span class="p">)</span>
+     <span class="k">case</span> <span class="mi">2</span><span class="p">:</span>
+         <span class="n">select_all_data</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+     <span class="k">case</span> <span class="mi">3</span><span class="p">:</span>
+         <span class="nb">id</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj id: &quot;</span><span class="p">)</span>
+         <span class="n">delete_data</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="nb">id</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dane usunięte&quot;</span><span class="p">)</span>
+         <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Dalej? &quot;</span><span class="p">)</span>
+     <span class="k">case</span> <span class="mi">4</span><span class="p">:</span>
+         <span class="n">save_csv</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="9">
+<li><p><strong>main()</strong></p></li>
+</ol>
+<p>Ta funkcja “main” jest główną funkcją programu. Inicjalizuje bazę danych, tworzy tabelę “pomiary” (jeśli jeszcze nie istnieje), a następnie uruchamia pętlę, w której użytkownik może wybierać różne opcje.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+ <span class="n">database</span> <span class="o">=</span> <span class="s2">&quot;pomiary_temp.db&quot;</span>
+ <span class="n">conn</span> <span class="o">=</span> <span class="n">create_connection</span><span class="p">(</span><span class="n">database</span><span class="p">)</span>
+ <span class="n">sql_create_pomiary_table</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot; CREATE TABLE IF NOT EXISTS pomiary (</span>
+<span class="s2">                                         id integer PRIMARY KEY,</span>
+<span class="s2">                                         ulica text NOT NULL,</span>
+<span class="s2">                                         numer_budynku int NOT NULL,</span>
+<span class="s2">                                         numer_mieszkania int NOT NULL,</span>
+<span class="s2">                                         pomiar int NOT NULL,</span>
+<span class="s2">                                         data_pomiaru date NOT NULL</span>
+<span class="s2">                                     ); &quot;&quot;&quot;</span>
+ <span class="n">create_table</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">sql_create_pomiary_table</span><span class="p">)</span>
+ <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Wprowadź dane&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Sprawdź dane&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Usuń wybrane dane&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4. Zapisz dane do pliku csv&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5. Wyjdź&quot;</span><span class="p">)</span>
+     <span class="n">option</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Wybierz opcję: &quot;</span><span class="p">))</span>
+     <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+         <span class="k">break</span>
+     <span class="n">program</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Sprawozdanie</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Spis Treści:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../rozdzial1.html">Rozdzial 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rozdzial2.html">Rozdzial 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rozdzial3.html">Rozdzial 3</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Krzysztof Gora.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/Data-Base-raport-Main/source/dok_apt1.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

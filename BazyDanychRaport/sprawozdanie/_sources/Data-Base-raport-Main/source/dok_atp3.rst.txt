@@ -1,0 +1,275 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Aplikacji do analizy danych
+=========================================
+
+1. **gen_raport(conn)**
+
+W funkcji gen_raport został dodany kod generujący raport na podstawie danych z bazy danych.
+Funkcja wykonuje zapytanie SQL, które pobiera dane dotyczące pomiarów wraz z informacjami o adresach. Następnie otrzymane dane są przetwarzane i wykorzystywane do generowania wykresów.
+Pierwszy wykres to histogram pomiarów dla wszystkich adresów. Wykorzystywana jest biblioteka matplotlib do generowania wykresu histogramu.
+Drugi wykres to wykres słupkowy ilości pomiarów dla poszczególnych ulic. Dane są grupowane według ulic, a następnie generowany jest wykres słupkowy.
+Oba wykresy są wyświetlane na ekranie.
+Aby użyć funkcji gen_raport, należy przekazać jej połączenie do bazy danych conn jako argument.
+
+
+.. code:: python
+
+   def gen_raport(conn):
+    
+    cursor = conn.cursor()
+    
+    query = """
+    SELECT pomiary.pomiar, pomiary.data, adresy.ulica, adresy.numer_budynku, adresy.numer_mieszkania
+    FROM pomiary
+    JOIN adresy ON pomiary.id_adresu = adresy.id;
+    """
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    cursor.close()
+    
+    df = pd.DataFrame(rows, columns=['pomiar', 'data', 'ulica', 'numer_budynku', 'numer_mieszkania'])
+
+    plt.figure(figsize=(10, 6))
+    plt.hist(df['pomiar'], bins=10, alpha=0.5, label='Wszystkie adresy')
+    plt.xlabel('Pomiar')
+    plt.ylabel('Liczebność')
+    plt.title('Histogram pomiarów dla wszystkich adresów')
+    plt.legend()
+    plt.tight_layout()
+    
+    plt.show()
+    
+    df = pd.DataFrame(rows, columns=['pomiar', 'data', 'ulica', 'numer_budynku', 'numer_mieszkania'])
+
+    df_grouped = df.groupby('ulica').size().reset_index(name='count')
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(df_grouped['ulica'], df_grouped['count'])
+    plt.xlabel('Ulica')
+    plt.ylabel('Ilość pomiarów')
+    plt.title('Wykres słupkowy - Ilość pomiarów dla poszczególnych ulic')
+    plt.xticks(rotation=90)
+
+    plt.show()
+
+
+
+2. **gen_dataframe(data,sql_columns)**
+
+W funkcji gen_dataframe został dodany kod, który generuje ramkę danych (DataFrame) na podstawie otrzymanych danych i nazw kolumn. Nazwy kolumn są mapowane na bardziej czytelne etykiety zgodnie z podanymi regułami.
+Funkcja tworzy nową ramkę danych (df) przy użyciu biblioteki pandas. Dane są przekształcane na odpowiednie kolumny zgodnie z otrzymanymi nazwami kolumn. Następnie ramka danych jest wyświetlana na ekranie.
+Użytkownik ma możliwość zapisania danych do pliku CSV. Jeśli wybierze opcję "1 - TAK", dane zostaną zapisane do pliku "dane.csv" w bieżącym katalogu.
+Aby użyć funkcji gen_dataframe, należy przekazać jej dane i nazwy kolumn jako argumenty.
+
+.. code:: python
+
+   def gen_dataframe(data,sql_columns):
+    columns_name = []
+    for el in sql_columns:
+        match el:
+            case 'pomiary.pomiar':
+                columns_name.append("Pomiar")
+            case 'pomiary.data':
+                columns_name.append("Data pomiaru")
+            case 'adresy.ulica':
+                columns_name.append("Ulica")
+            case 'adresy.numer_budynku':
+                columns_name.append("Numer budynku")
+            case 'adresy.numer_mieszkania':
+                columns_name.append("Numer mieszkania")
+    df = pd.DataFrame(data, columns=columns_name)
+    print(df)
+    print()
+    print("Zapisać dane do csv?")
+    wybor = input("1 - TAK, 0 - NIE")
+    print()
+    if(wybor == '1'):
+        df.to_csv('dane.csv', index=False)
+    
+
+
+3. **prepare_conditions(conn,kolumny,warunki)**
+
+W funkcji prepare_conditions, która przygotowuje warunki zapytania SQL, została dodana integracja z funkcją select_data. Funkcja prepare_conditions przyjmuje trzy argumenty: conn (połączenie do bazy danych), kolumny (lista wybranych kolumn) i warunki (lista wybranych warunków).
+Wewnątrz funkcji, na podstawie otrzymanych argumentów, budowane są listy sql_columns (nazwy kolumn) oraz sql_condition (warunek zapytania SQL). Następnie przeprowadzana jest iteracja po elementach listy warunki, w której na podstawie wybranych opcji użytkownik jest proszony o podanie wartości dla warunku.
+Na podstawie wybranych opcji tworzony jest odpowiedni fragment warunku zapytania SQL i dodawany do sql_condition. Na koniec, przy użyciu funkcji select_data, wywoływane jest wykonanie zapytania SQL na podstawie zebranych informacji.
+Aby użyć funkcji prepare_conditions, należy przekazać jej połączenie do bazy danych (conn), listę wybranych kolumn (kolumny) oraz listę wybranych warunków (warunki).
+Warto pamiętać, że funkcja prepare_conditions wykorzystuje funkcję select_data, która została zdefiniowana wcześniej. Upewnij się, że zarówno prepare_conditions, jak i select_data są dostępne w kodzie przed wykonaniem funkcji prepare_conditions.
+
+.. code:: python
+
+   def prepare_conditions(conn,kolumny,warunki):
+    sql_columns = []
+    sql_condition = ""
+    i=0
+    for el in kolumny:
+        match el:
+            case '1':
+                sql_columns.append("pomiary.pomiar")
+            case '2':
+                sql_columns.append("pomiary.data")
+            case '3':
+                sql_columns.append("adresy.ulica")
+            case '4':
+                sql_columns.append("adresy.numer_budynku")
+            case '5':
+                sql_columns.append("adresy.numer_mieszkania")
+    for el in warunki:
+        if(i>0):
+            sql_condition += " AND "
+        match el:
+            case '1':
+                print("1. Większy niż")
+                print("2. Mniejszy niż")
+                print("3. Równy")
+                wybor = input("Pomiar ma być: ")
+                wartosc = input("Podaj wartość do warunku: ")
+                print()
+                match wybor:
+                    case '1':
+                        sql_condition += "pomiary.pomiar > " + wartosc
+                    case '2':
+                        sql_condition += "pomiary.pomiar < " + wartosc
+                    case '3':
+                        sql_condition += "pomiary.pomiar = " + wartosc
+            case '2':
+                print("1. Większy niż")
+                print("2. Mniejszy niż")
+                print("3. Równy")
+                wybor = input("Data pomiaru ma być: ")
+                wartosc = input("Podaj wartość do warunku: ")
+                print()
+                match wybor:
+                    case '1':
+                        sql_condition += "pomiary.data > " + "'" + wartosc + "'"
+                    case '2':
+                        sql_condition += "pomiary.data < " + "'" + wartosc + "'"
+                    case '3':
+                        sql_condition += "pomiary.data = " + "'" + wartosc + "'"
+            case '3':
+                wartosc = input("Podaj nazwę ulicy: ")
+                print()
+                sql_condition += "adresy.ulica = " + "'" + wartosc + "'"
+            case '4':
+                print("1. Większy niż")
+                print("2. Mniejszy niż")
+                print("3. Równy")
+                wybor = input("Numer budynku ma być: ")
+                wartosc = input("Podaj wartość do warunku: ")
+                print()
+                match wybor:
+                    case '1':
+                        sql_condition += "adresy.numer_budynku > " + wartosc
+                    case '2':
+                        sql_condition += "adresy.numer_budynku < " + wartosc
+                    case '3':
+                        sql_condition += "adresy.numer_budynku = " + wartosc
+            case '5':
+                print("1. Większy niż")
+                print("2. Mniejszy niż")
+                print("3. Równy")
+                wybor = input("Numer mieszkania ma być: ")
+                wartosc = input("Podaj wartość do warunku: ")
+                print()
+                match wybor:
+                    case '1':
+                        sql_condition += "adresy.numer_mieszkania > " + wartosc
+                    case '2':
+                        sql_condition += "adresy.numer_mieszkania < " + wartosc
+                    case '3':
+                        sql_condition += "adresy.numer_mieszkania = " + wartosc
+                
+        i += 1
+    select_data(conn,sql_columns,sql_condition)
+
+
+4. **program(conn,wybor)**
+
+W funkcji program zostały dodane instrukcje dla wyboru opcji "1" oraz "2".
+Dla opcji "1", czyli generowania raportu, wywoływana jest funkcja gen_raport(conn).
+Dla opcji "2", użytkownik jest proszony o wybór kolumn, które chce wyświetlić, oraz wybór kolumn, według których chce filtrować dane. W pętlach while użytkownik ma możliwość wyboru jednej lub więcej opcji dla każdej z dwóch list: kolumny (wybrane kolumny) i warunki (wybrane kolumny do filtrowania). Wybór "0" w obu przypadkach kończy pętlę i przechodzi do wywołania funkcji prepare_conditions(conn, kolumny, warunki).
+
+.. code:: python
+
+   def program(conn,wybor):
+    match wybor:
+        case '1':
+            gen_raport(conn)
+        case '2':
+            kolumny = []
+            warunki = []
+            while True:
+                print("0. Dalej")
+                print("1. Pomiar")
+                print("2. Date pomiaru")
+                print("3. Ulice")
+                print("4. Numer budynku")
+                print("5. Numer mieszkania")
+                wybor = input("Wybierz jakie kolumny wyświetlić: ")
+                print()
+                if(wybor== '0'):
+                    break
+                kolumny.append(wybor)
+            while True:
+                print("0. Dalej")
+                print("1. Pomiar")
+                print("2. Date pomiaru")
+                print("3. Ulice")
+                print("4. Numer budynku")
+                print("5. Numer mieszkania")
+                wybor = input("Wybierz po jakich kolumnach filtrować dane: ")
+                print()
+                if(wybor== '0'):
+                    break
+                warunki.append(wybor)
+                
+            prepare_conditions(conn,kolumny,warunki)
+    
+
+
+5. **main()**
+
+W funkcji main zostały dodane instrukcje dla opcji "1" oraz "2".
+Opcja "1" odpowiada za wygenerowanie raportu i wywołuje funkcję program(conn, wybor) przekazując jako argumenty połączenie do bazy danych conn oraz wartość opcji wybor.
+Opcja "2" odpowiada za wyświetlenie danych i również wywołuje funkcję program(conn, wybor) z odpowiednimi argumentami.
+W funkcji main po wykonaniu funkcji program(conn, wybor) zamykane jest połączenie do bazy danych.
+Aby uruchomić program, należy wcześniej zdefiniować funkcję program oraz upewnić się, że moduł simplejson jest importowany.
+
+.. code:: python
+
+   def main():
+    with open("database_creds.json") as db_con_file:
+        creds = simplejson.loads(db_con_file.read())
+   
+    conn = psycopg.connect(
+        host=creds['host_name'],
+        user=creds['user_name'],
+        dbname=creds['db_name'],
+        password=creds['password'],
+        port=creds['port_number'])
+    
+    while True:
+        print("0. Wyjdź")
+        print("1. Wyświetl raport")
+        print("2. Wyświetl dane")
+        wybor = input("Wybierz opcje: ")
+        print()
+        if(wybor == '0'):
+            break
+        program(conn,wybor)
+    
+    conn.close()
+
+
+
+
+
+.. toctree::
+   :maxdepth: 5
+   :caption: Contents:
+   
+

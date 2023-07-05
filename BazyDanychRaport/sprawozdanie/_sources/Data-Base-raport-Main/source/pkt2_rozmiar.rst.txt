@@ -1,0 +1,24 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Rozmiar tabel
+==============================================
+
+
+Rozmiar tabel w bazie danych ma bezpośredni wpływ na wydajność systemu. Właściwe zarządzanie rozmiarem tabel jest niezbędne, aby uniknąć problemów z wydajnością i przeciążeniami. Istnieje kilka czynników, które należy wziąć pod uwagę przy planowaniu rozmiaru tabel:
+
+1. Liczba rekordów: Rozmiar tabeli jest często zależny od liczby rekordów w niej przechowywanych. Przy planowaniu struktury tabeli należy przewidzieć przyszłe potrzeby i określić optymalną liczbę rekordów, aby uniknąć niepotrzebnego rozrostu tabeli.
+
+2. Typy danych: Różne typy danych zajmują różne ilości miejsca w pamięci. Należy zwrócić uwagę na wybór odpowiednich typów danych, aby zoptymalizować zużycie miejsca przez tabelę.
+
+3. Indeksy: Indeksy są niezwykle przydatne w przyspieszaniu wyszukiwania danych, ale jednocześnie zajmują dodatkowe miejsce w pamięci. Należy odpowiednio zaplanować indeksowanie tabeli, aby uniknąć nadmiernego zużycia miejsca.
+
+
+
+.. toctree::
+   :maxdepth: 5
+   :caption: Contents:
+
+

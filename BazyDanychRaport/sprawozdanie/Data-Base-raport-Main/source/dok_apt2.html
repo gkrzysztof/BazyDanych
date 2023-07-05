@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Aplikacji do kontroli bazy danych &#8212; Sprawozdanie  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="aplikacji-do-kontroli-bazy-danych">
+<h1>Aplikacji do kontroli bazy danych<a class="headerlink" href="#aplikacji-do-kontroli-bazy-danych" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li><p><strong>create_table_adresy(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “create_table_adresy” służy do tworzenia tabeli “adresy” w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_table_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS public.adresy</span>
+<span class="s2">(</span>
+<span class="s2"> id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),</span>
+<span class="s2"> ulica text COLLATE pg_catalog.&quot;default&quot; NOT NULL,</span>
+<span class="s2"> numer_budynku integer NOT NULL,</span>
+<span class="s2"> numer_mieszkania integer NOT NULL,</span>
+<span class="s2"> CONSTRAINT adresy_pkey PRIMARY KEY (id)</span>
+<span class="s2">);&quot;&quot;&quot;</span>
+ <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_command</span><span class="p">)</span>
+ <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tabela adresy utworzona z sukcesem&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>create_table_pomiary(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “create_table_pomiary” służy do tworzenia tabeli “pomiary” w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_table_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS public.pomiary</span>
+<span class="s2">(</span>
+<span class="s2"> id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),</span>
+<span class="s2"> pomiar integer NOT NULL,</span>
+<span class="s2"> data date NOT NULL,</span>
+<span class="s2"> id_adresu integer NOT NULL,</span>
+<span class="s2"> CONSTRAINT pomiary_pkey PRIMARY KEY (id),</span>
+<span class="s2"> CONSTRAINT id_adresu FOREIGN KEY (id_adresu)</span>
+<span class="s2">     REFERENCES public.adresy (id) MATCH SIMPLE</span>
+<span class="s2">     ON UPDATE NO ACTION</span>
+<span class="s2">     ON DELETE NO ACTION</span>
+<span class="s2">);&quot;&quot;&quot;</span>
+ <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_command</span><span class="p">)</span>
+ <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tabela pomiary utworzona z sukcesem&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>delete_table_adresy(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “delete_table_adresy” służy do usuwania tabeli “adresy” z bazy danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">delete_table_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">     DROP TABLE IF EXISTS public.&quot;adresy&quot;;&quot;&quot;&quot;</span>
+ <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_command</span><span class="p">)</span>
+ <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tabela adresy usunięta z sukcesem&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p><strong>delete_table_pomiary(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “delete_table_pomiary” służy do usuwania tabeli “pomiary” z bazy danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">delete_table_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">     DROP TABLE IF EXISTS public.&quot;pomiary&quot;;&quot;&quot;&quot;</span>
+ <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_command</span><span class="p">)</span>
+ <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tabela pomiary usunięta z sukcesem&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p><strong>insert_to_adresy(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “insert_to_adresy” służy do wprowadzania danych z pliku CSV do tabeli “adresy” w bazie danych. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">insert_to_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;adresy_temp.csv&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+     <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+     <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+         <span class="n">data_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+         <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+             <span class="sd">&quot;&quot;&quot;INSERT INTO adresy (ulica,numer_budynku,numer_mieszkania)</span>
+<span class="sd">             VALUES (%s,%s,%s);&quot;&quot;&quot;</span><span class="p">,</span>
+             <span class="n">data_tuple</span>
+         <span class="p">)</span>
+         <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Testowe dane wprowadzone do tabeli adresy z sukcesem&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li><p><strong>insert_to_pomiary(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “insert_to_pomiary” służy do wprowadzania danych z pliku CSV do tabeli “pomiary” w bazie danych. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">insert_to_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pomiary_temp.csv&quot;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+     <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+     <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+         <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+         <span class="n">data_tupla</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+         <span class="n">data_tupla_adres</span> <span class="o">=</span> <span class="n">data_tupla</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+         <span class="n">data_tupla_pomiar</span> <span class="o">=</span> <span class="n">data_tupla</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+         <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;SELECT * FROM adresy WHERE ulica = </span><span class="si">%s</span><span class="s2"> AND numer_budynku = </span><span class="si">%s</span><span class="s2"> AND numer_mieszkania = </span><span class="si">%s</span><span class="s2">;&quot;&quot;&quot;</span><span class="p">,</span><span class="n">data_tupla_adres</span><span class="p">)</span>
+         <span class="nb">id</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+         <span class="n">data_tupla_all</span> <span class="o">=</span> <span class="n">data_tupla_pomiar</span> <span class="o">+</span> <span class="p">(</span><span class="nb">id</span><span class="p">,)</span>
+         <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+             <span class="sd">&quot;&quot;&quot;INSERT INTO pomiary (pomiar,data,id_adresu)</span>
+<span class="sd">             VALUES (%s,%s,%s);&quot;&quot;&quot;</span><span class="p">,</span>
+             <span class="n">data_tupla_all</span>
+         <span class="p">)</span>
+         <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+     <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Testowe dane wprowadzone do tabeli pomiary z sukcesem&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="7">
+<li><p><strong>clear_table_adresy(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “clear_table_adresy” służy do usuwania wszystkich danych z tabeli “adresy” w bazie danych PostgreSQL, zachowując strukturę tabeli. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">clear_table_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">     TRUNCATE TABLE adresy CASCADE;&quot;&quot;&quot;</span>
+ <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_command</span><span class="p">)</span>
+ <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dane z tabeli adresy usunięte z sukcesem&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="8">
+<li><p><strong>clear_table_pomiary(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “clear_table_pomiary” służy do usuwania wszystkich danych z tabeli “pomiary” w bazie danych PostgreSQL, zachowując strukturę tabeli. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">clear_table_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">     TRUNCATE TABLE pomiary CASCADE;&quot;&quot;&quot;</span>
+ <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_command</span><span class="p">)</span>
+ <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+ <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dane z tabeli pomiary usunięte z sukcesem&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="9">
+<li><p><strong>insert_data_from_sqlite(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “insert_data_from_sqlite” służy do wprowadzania danych z pliku CSV z aplikacji do pomiarów do tabeli “pomiary” w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">insert_data_from_sqlite</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;pomiary.csv&quot;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+     <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+     <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+         <span class="n">cur</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+         <span class="n">data_tupla</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+         <span class="n">data_tupla_adres</span> <span class="o">=</span> <span class="n">data_tupla</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+         <span class="n">data_tupla_pomiar</span> <span class="o">=</span> <span class="n">data_tupla</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+         <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;SELECT * FROM adresy WHERE ulica = </span><span class="si">%s</span><span class="s2"> AND numer_budynku = </span><span class="si">%s</span><span class="s2"> AND numer_mieszkania = </span><span class="si">%s</span><span class="s2">;&quot;&quot;&quot;</span><span class="p">,</span><span class="n">data_tupla_adres</span><span class="p">)</span>
+         <span class="nb">id</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+         <span class="n">data_tupla_all</span> <span class="o">=</span> <span class="n">data_tupla_pomiar</span> <span class="o">+</span> <span class="p">(</span><span class="nb">id</span><span class="p">,)</span>
+         <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+             <span class="sd">&quot;&quot;&quot;INSERT INTO pomiary (pomiar,data,id_adresu)</span>
+<span class="sd">             VALUES (%s,%s,%s);&quot;&quot;&quot;</span><span class="p">,</span>
+             <span class="n">data_tupla_all</span>
+         <span class="p">)</span>
+         <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+     <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dane z pliku csv wprowadzone z sukcesem&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="10">
+<li><p><strong>insert_from_sqlite(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “insert_from_sqlite” służy do wywołania funkcji “insert_data_from_sqlite” w celu wprowadzenia danych z pliku CSV do tabeli “pomiary” w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">insert_from_sqlite</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">insert_data_from_sqlite</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="11">
+<li><p><strong>clear_tables(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “clear_tables” służy do czyszczenia zawartości tabel “adresy” i “pomiary” w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">clear_tables</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">clear_table_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+ <span class="n">clear_table_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="12">
+<li><p><strong>insert_temp_data(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “insert_temp_data” służy do wprowadzenia przykładowych danych do tabel “adresy” i “pomiary” w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">insert_temp_data</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">insert_to_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+ <span class="n">insert_to_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="13">
+<li><p><strong>create_tables(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “create_tables” służy do tworzenia tabel “adresy” i “pomiary” w bazie danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_tables</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">create_table_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+ <span class="n">create_table_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="14">
+<li><p><strong>delete_tables(conn)</strong></p></li>
+</ol>
+<p>Ta funkcja “delete_tables” służy do usuwania tabel “pomiary” i “adresy” z bazy danych PostgreSQL. Przyjmuje obiekt połączenia (conn) jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">delete_tables</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+ <span class="n">delete_table_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+ <span class="n">delete_table_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="15">
+<li><p><strong>program(conn, wybor)</strong></p></li>
+</ol>
+<p>Funkcja “program” jest głównym punktem wejścia programu. Przyjmuje obiekt połączenia (conn) i opcję wyboru (wybor) jako argumenty. Na podstawie opcji wyboru, funkcja “program” wykonuje odpowiednie działania</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">program</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">wybor</span><span class="p">):</span>
+ <span class="k">match</span> <span class="n">wybor</span><span class="p">:</span>
+     <span class="k">case</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Utwórz tabele adresy&quot;</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Utwórz tabele pomiary&quot;</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Utwórz obie tabele&quot;</span><span class="p">)</span>
+         <span class="n">tab</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Wybierz opcję: &quot;</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">):</span>
+             <span class="n">create_table_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">):</span>
+             <span class="n">create_table_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;3&#39;</span><span class="p">):</span>
+             <span class="n">create_tables</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+     <span class="k">case</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Usuń tabele pomiary&quot;</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Usuń tabele adresy&quot;</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Usuń obie tabele&quot;</span><span class="p">)</span>
+         <span class="n">tab</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Wybierz opcję: &quot;</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">):</span>
+             <span class="n">delete_table_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">):</span>
+             <span class="n">delete_table_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;3&#39;</span><span class="p">):</span>
+             <span class="n">delete_tables</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+     <span class="k">case</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Wgraj dane do tabeli adresy&quot;</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Wgraj dane do tabeli pomiary&quot;</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Wgraj dane do wszystkich tabel&quot;</span><span class="p">)</span>
+         <span class="n">tab</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Wybierz opcję: &quot;</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">):</span>
+             <span class="n">insert_to_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">):</span>
+             <span class="n">insert_to_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;3&#39;</span><span class="p">):</span>
+             <span class="n">insert_temp_data</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+     <span class="k">case</span> <span class="s1">&#39;4&#39;</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Usuń dane z tabeli adresy&quot;</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Usuń dane z tabeli pomiary&quot;</span><span class="p">)</span>
+         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Usuń dane ze wszystkich tabel&quot;</span><span class="p">)</span>
+         <span class="n">tab</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Wybierz opcję: &quot;</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">):</span>
+             <span class="n">clear_table_adresy</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">):</span>
+             <span class="n">clear_table_pomiary</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+         <span class="k">if</span><span class="p">(</span><span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;3&#39;</span><span class="p">):</span>
+             <span class="n">clear_tables</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+     <span class="k">case</span> <span class="s1">&#39;5&#39;</span><span class="p">:</span>
+         <span class="n">insert_data_from_sqlite</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="16">
+<li><p><strong>main()</strong></p></li>
+</ol>
+<p>W funkcji main został dodany kod, który wczytuje dane dotyczące połączenia z bazą danych z pliku JSON o nazwie “database_creds.json”. Następnie, na podstawie tych danych, nawiązywane jest połączenie z bazą danych PostgreSQL. Po nawiązaniu połączenia, w pętli while wyświetlane są opcje menu, a użytkownik ma możliwość wyboru odpowiedniej opcji</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+
+ <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;database_creds.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db_con_file</span><span class="p">:</span>
+     <span class="n">creds</span> <span class="o">=</span> <span class="n">simplejson</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">db_con_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+ <span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+     <span class="n">host</span><span class="o">=</span><span class="n">creds</span><span class="p">[</span><span class="s1">&#39;host_name&#39;</span><span class="p">],</span>
+     <span class="n">user</span><span class="o">=</span><span class="n">creds</span><span class="p">[</span><span class="s1">&#39;user_name&#39;</span><span class="p">],</span>
+     <span class="n">dbname</span><span class="o">=</span><span class="n">creds</span><span class="p">[</span><span class="s1">&#39;db_name&#39;</span><span class="p">],</span>
+     <span class="n">password</span><span class="o">=</span><span class="n">creds</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span>
+     <span class="n">port</span><span class="o">=</span><span class="n">creds</span><span class="p">[</span><span class="s1">&#39;port_number&#39;</span><span class="p">])</span>
+ <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Utwórz tabelę&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Usuń tabelę&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Wgraj testowe dane&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4. Usuń dane z tabeli&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5. Wgraj dane z pliku csv&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;0. Wyjdź&quot;</span><span class="p">)</span>
+     <span class="n">wybor</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Wybierz opcję: &quot;</span><span class="p">)</span>
+     <span class="k">if</span><span class="p">(</span><span class="n">wybor</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">):</span>
+         <span class="k">break</span>
+     <span class="n">program</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">wybor</span><span class="p">)</span>
+ <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Sprawozdanie</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Spis Treści:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../rozdzial1.html">Rozdzial 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rozdzial2.html">Rozdzial 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rozdzial3.html">Rozdzial 3</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Krzysztof Gora.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/Data-Base-raport-Main/source/dok_apt2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

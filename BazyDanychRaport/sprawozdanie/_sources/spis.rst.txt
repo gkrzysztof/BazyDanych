@@ -1,0 +1,7 @@
+Spis tresci
+============
+.. tocktree::
+  :maxdepth: 4
+  
+  Rozdzial 1
+  Rozdzial 2

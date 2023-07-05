@@ -1,0 +1,25 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Plik postgresql.conf:
+=========================================
+
+Plik postgresql.conf jest głównym plikiem konfiguracyjnym dla serwera bazy danych PostgreSQL. Obejmuje szeroki zakres parametrów, które można dostosować w celu zoptymalizowania działania bazy danych. Poniżej przedstawiamy kilka podstawowych parametrów konfiguracyjnych:
+
+* listen_addresses: Określa adresy IP lub nazwy hostów, na których serwer nasłuchuje połączeń przychodzących.
+* port: Określa numer portu, na którym serwer nasłuchuje połączeń.
+* max_connections: Określa maksymalną liczbę jednoczesnych połączeń z serwerem.
+* shared_buffers: Określa ilość pamięci RAM przeznaczonej na buforowanie danych w pamięci podręcznej.
+* effective_cache_size: Określa przybliżony rozmiar pamięci podręcznej dostępnej dla serwera.
+* work_mem: Określa ilość pamięci używanej przez sortowanie i operacje tymczasowe.
+* maintenance_work_mem: Określa ilość pamięci używanej przez operacje konserwacyjne, takie jak indeksowanie.
+* autovacuum: Włącza lub wyłącza automatyczne wywoływanie procesu autowakuum.
+
+
+.. toctree::
+   :maxdepth: 5
+   :caption: Contents:
+   
+

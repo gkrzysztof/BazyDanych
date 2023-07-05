@@ -1,0 +1,19 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Konfiguracja bazy danych
+========================================
+
+.. toctree::
+   wstep
+   pkt1
+   pkt2
+   pkt3
+   dok
+   dzialanie
+   :maxdepth: 5
+   :caption: Contents:
+   
+

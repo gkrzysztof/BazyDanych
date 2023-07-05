@@ -1,0 +1,354 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Aplikacji do analizy danych &#8212; Sprawozdanie  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="aplikacji-do-analizy-danych">
+<h1>Aplikacji do analizy danych<a class="headerlink" href="#aplikacji-do-analizy-danych" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li><p><strong>gen_raport(conn)</strong></p></li>
+</ol>
+<p>W funkcji gen_raport został dodany kod generujący raport na podstawie danych z bazy danych.
+Funkcja wykonuje zapytanie SQL, które pobiera dane dotyczące pomiarów wraz z informacjami o adresach. Następnie otrzymane dane są przetwarzane i wykorzystywane do generowania wykresów.
+Pierwszy wykres to histogram pomiarów dla wszystkich adresów. Wykorzystywana jest biblioteka matplotlib do generowania wykresu histogramu.
+Drugi wykres to wykres słupkowy ilości pomiarów dla poszczególnych ulic. Dane są grupowane według ulic, a następnie generowany jest wykres słupkowy.
+Oba wykresy są wyświetlane na ekranie.
+Aby użyć funkcji gen_raport, należy przekazać jej połączenie do bazy danych conn jako argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gen_raport</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+
+ <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+ <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2"> SELECT pomiary.pomiar, pomiary.data, adresy.ulica, adresy.numer_budynku, adresy.numer_mieszkania</span>
+<span class="s2"> FROM pomiary</span>
+<span class="s2"> JOIN adresy ON pomiary.id_adresu = adresy.id;</span>
+<span class="s2"> &quot;&quot;&quot;</span>
+ <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+ <span class="n">rows</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+ <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+ <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pomiar&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;ulica&#39;</span><span class="p">,</span> <span class="s1">&#39;numer_budynku&#39;</span><span class="p">,</span> <span class="s1">&#39;numer_mieszkania&#39;</span><span class="p">])</span>
+
+ <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;pomiar&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Wszystkie adresy&#39;</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Pomiar&#39;</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Liczebność&#39;</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Histogram pomiarów dla wszystkich adresów&#39;</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+ <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+ <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pomiar&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;ulica&#39;</span><span class="p">,</span> <span class="s1">&#39;numer_budynku&#39;</span><span class="p">,</span> <span class="s1">&#39;numer_mieszkania&#39;</span><span class="p">])</span>
+
+ <span class="n">df_grouped</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;ulica&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">)</span>
+
+ <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">df_grouped</span><span class="p">[</span><span class="s1">&#39;ulica&#39;</span><span class="p">],</span> <span class="n">df_grouped</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">])</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Ulica&#39;</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Ilość pomiarów&#39;</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Wykres słupkowy - Ilość pomiarów dla poszczególnych ulic&#39;</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+
+ <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>gen_dataframe(data,sql_columns)</strong></p></li>
+</ol>
+<p>W funkcji gen_dataframe został dodany kod, który generuje ramkę danych (DataFrame) na podstawie otrzymanych danych i nazw kolumn. Nazwy kolumn są mapowane na bardziej czytelne etykiety zgodnie z podanymi regułami.
+Funkcja tworzy nową ramkę danych (df) przy użyciu biblioteki pandas. Dane są przekształcane na odpowiednie kolumny zgodnie z otrzymanymi nazwami kolumn. Następnie ramka danych jest wyświetlana na ekranie.
+Użytkownik ma możliwość zapisania danych do pliku CSV. Jeśli wybierze opcję “1 - TAK”, dane zostaną zapisane do pliku “dane.csv” w bieżącym katalogu.
+Aby użyć funkcji gen_dataframe, należy przekazać jej dane i nazwy kolumn jako argumenty.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gen_dataframe</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">sql_columns</span><span class="p">):</span>
+ <span class="n">columns_name</span> <span class="o">=</span> <span class="p">[]</span>
+ <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">sql_columns</span><span class="p">:</span>
+     <span class="k">match</span> <span class="n">el</span><span class="p">:</span>
+         <span class="k">case</span> <span class="s1">&#39;pomiary.pomiar&#39;</span><span class="p">:</span>
+             <span class="n">columns_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Pomiar&quot;</span><span class="p">)</span>
+         <span class="k">case</span> <span class="s1">&#39;pomiary.data&#39;</span><span class="p">:</span>
+             <span class="n">columns_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Data pomiaru&quot;</span><span class="p">)</span>
+         <span class="k">case</span> <span class="s1">&#39;adresy.ulica&#39;</span><span class="p">:</span>
+             <span class="n">columns_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Ulica&quot;</span><span class="p">)</span>
+         <span class="k">case</span> <span class="s1">&#39;adresy.numer_budynku&#39;</span><span class="p">:</span>
+             <span class="n">columns_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Numer budynku&quot;</span><span class="p">)</span>
+         <span class="k">case</span> <span class="s1">&#39;adresy.numer_mieszkania&#39;</span><span class="p">:</span>
+             <span class="n">columns_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Numer mieszkania&quot;</span><span class="p">)</span>
+ <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns_name</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Zapisać dane do csv?&quot;</span><span class="p">)</span>
+ <span class="n">wybor</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;1 - TAK, 0 - NIE&quot;</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">()</span>
+ <span class="k">if</span><span class="p">(</span><span class="n">wybor</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">):</span>
+     <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;dane.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>prepare_conditions(conn,kolumny,warunki)</strong></p></li>
+</ol>
+<p>W funkcji prepare_conditions, która przygotowuje warunki zapytania SQL, została dodana integracja z funkcją select_data. Funkcja prepare_conditions przyjmuje trzy argumenty: conn (połączenie do bazy danych), kolumny (lista wybranych kolumn) i warunki (lista wybranych warunków).
+Wewnątrz funkcji, na podstawie otrzymanych argumentów, budowane są listy sql_columns (nazwy kolumn) oraz sql_condition (warunek zapytania SQL). Następnie przeprowadzana jest iteracja po elementach listy warunki, w której na podstawie wybranych opcji użytkownik jest proszony o podanie wartości dla warunku.
+Na podstawie wybranych opcji tworzony jest odpowiedni fragment warunku zapytania SQL i dodawany do sql_condition. Na koniec, przy użyciu funkcji select_data, wywoływane jest wykonanie zapytania SQL na podstawie zebranych informacji.
+Aby użyć funkcji prepare_conditions, należy przekazać jej połączenie do bazy danych (conn), listę wybranych kolumn (kolumny) oraz listę wybranych warunków (warunki).
+Warto pamiętać, że funkcja prepare_conditions wykorzystuje funkcję select_data, która została zdefiniowana wcześniej. Upewnij się, że zarówno prepare_conditions, jak i select_data są dostępne w kodzie przed wykonaniem funkcji prepare_conditions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">prepare_conditions</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">kolumny</span><span class="p">,</span><span class="n">warunki</span><span class="p">):</span>
+ <span class="n">sql_columns</span> <span class="o">=</span> <span class="p">[]</span>
+ <span class="n">sql_condition</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+ <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+ <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">kolumny</span><span class="p">:</span>
+     <span class="k">match</span> <span class="n">el</span><span class="p">:</span>
+         <span class="k">case</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+             <span class="n">sql_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;pomiary.pomiar&quot;</span><span class="p">)</span>
+         <span class="k">case</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+             <span class="n">sql_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;pomiary.data&quot;</span><span class="p">)</span>
+         <span class="k">case</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span>
+             <span class="n">sql_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;adresy.ulica&quot;</span><span class="p">)</span>
+         <span class="k">case</span> <span class="s1">&#39;4&#39;</span><span class="p">:</span>
+             <span class="n">sql_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;adresy.numer_budynku&quot;</span><span class="p">)</span>
+         <span class="k">case</span> <span class="s1">&#39;5&#39;</span><span class="p">:</span>
+             <span class="n">sql_columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;adresy.numer_mieszkania&quot;</span><span class="p">)</span>
+ <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">warunki</span><span class="p">:</span>
+     <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+         <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot; AND &quot;</span>
+     <span class="k">match</span> <span class="n">el</span><span class="p">:</span>
+         <span class="k">case</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Większy niż&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Mniejszy niż&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Równy&quot;</span><span class="p">)</span>
+             <span class="n">wybor</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Pomiar ma być: &quot;</span><span class="p">)</span>
+             <span class="n">wartosc</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj wartość do warunku: &quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">()</span>
+             <span class="k">match</span> <span class="n">wybor</span><span class="p">:</span>
+                 <span class="k">case</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;pomiary.pomiar &gt; &quot;</span> <span class="o">+</span> <span class="n">wartosc</span>
+                 <span class="k">case</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;pomiary.pomiar &lt; &quot;</span> <span class="o">+</span> <span class="n">wartosc</span>
+                 <span class="k">case</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;pomiary.pomiar = &quot;</span> <span class="o">+</span> <span class="n">wartosc</span>
+         <span class="k">case</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Większy niż&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Mniejszy niż&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Równy&quot;</span><span class="p">)</span>
+             <span class="n">wybor</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Data pomiaru ma być: &quot;</span><span class="p">)</span>
+             <span class="n">wartosc</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj wartość do warunku: &quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">()</span>
+             <span class="k">match</span> <span class="n">wybor</span><span class="p">:</span>
+                 <span class="k">case</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;pomiary.data &gt; &quot;</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="n">wartosc</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+                 <span class="k">case</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;pomiary.data &lt; &quot;</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="n">wartosc</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+                 <span class="k">case</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;pomiary.data = &quot;</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="n">wartosc</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+         <span class="k">case</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span>
+             <span class="n">wartosc</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj nazwę ulicy: &quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">()</span>
+             <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;adresy.ulica = &quot;</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="n">wartosc</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+         <span class="k">case</span> <span class="s1">&#39;4&#39;</span><span class="p">:</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Większy niż&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Mniejszy niż&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Równy&quot;</span><span class="p">)</span>
+             <span class="n">wybor</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Numer budynku ma być: &quot;</span><span class="p">)</span>
+             <span class="n">wartosc</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj wartość do warunku: &quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">()</span>
+             <span class="k">match</span> <span class="n">wybor</span><span class="p">:</span>
+                 <span class="k">case</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;adresy.numer_budynku &gt; &quot;</span> <span class="o">+</span> <span class="n">wartosc</span>
+                 <span class="k">case</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;adresy.numer_budynku &lt; &quot;</span> <span class="o">+</span> <span class="n">wartosc</span>
+                 <span class="k">case</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;adresy.numer_budynku = &quot;</span> <span class="o">+</span> <span class="n">wartosc</span>
+         <span class="k">case</span> <span class="s1">&#39;5&#39;</span><span class="p">:</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Większy niż&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Mniejszy niż&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Równy&quot;</span><span class="p">)</span>
+             <span class="n">wybor</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Numer mieszkania ma być: &quot;</span><span class="p">)</span>
+             <span class="n">wartosc</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Podaj wartość do warunku: &quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">()</span>
+             <span class="k">match</span> <span class="n">wybor</span><span class="p">:</span>
+                 <span class="k">case</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;adresy.numer_mieszkania &gt; &quot;</span> <span class="o">+</span> <span class="n">wartosc</span>
+                 <span class="k">case</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;adresy.numer_mieszkania &lt; &quot;</span> <span class="o">+</span> <span class="n">wartosc</span>
+                 <span class="k">case</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span>
+                     <span class="n">sql_condition</span> <span class="o">+=</span> <span class="s2">&quot;adresy.numer_mieszkania = &quot;</span> <span class="o">+</span> <span class="n">wartosc</span>
+
+     <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+ <span class="n">select_data</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">sql_columns</span><span class="p">,</span><span class="n">sql_condition</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p><strong>program(conn,wybor)</strong></p></li>
+</ol>
+<p>W funkcji program zostały dodane instrukcje dla wyboru opcji “1” oraz “2”.
+Dla opcji “1”, czyli generowania raportu, wywoływana jest funkcja gen_raport(conn).
+Dla opcji “2”, użytkownik jest proszony o wybór kolumn, które chce wyświetlić, oraz wybór kolumn, według których chce filtrować dane. W pętlach while użytkownik ma możliwość wyboru jednej lub więcej opcji dla każdej z dwóch list: kolumny (wybrane kolumny) i warunki (wybrane kolumny do filtrowania). Wybór “0” w obu przypadkach kończy pętlę i przechodzi do wywołania funkcji prepare_conditions(conn, kolumny, warunki).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">program</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">wybor</span><span class="p">):</span>
+ <span class="k">match</span> <span class="n">wybor</span><span class="p">:</span>
+     <span class="k">case</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
+         <span class="n">gen_raport</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+     <span class="k">case</span> <span class="s1">&#39;2&#39;</span><span class="p">:</span>
+         <span class="n">kolumny</span> <span class="o">=</span> <span class="p">[]</span>
+         <span class="n">warunki</span> <span class="o">=</span> <span class="p">[]</span>
+         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;0. Dalej&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Pomiar&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Date pomiaru&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Ulice&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4. Numer budynku&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5. Numer mieszkania&quot;</span><span class="p">)</span>
+             <span class="n">wybor</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Wybierz jakie kolumny wyświetlić: &quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">()</span>
+             <span class="k">if</span><span class="p">(</span><span class="n">wybor</span><span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">):</span>
+                 <span class="k">break</span>
+             <span class="n">kolumny</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wybor</span><span class="p">)</span>
+         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;0. Dalej&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Pomiar&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Date pomiaru&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. Ulice&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4. Numer budynku&quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5. Numer mieszkania&quot;</span><span class="p">)</span>
+             <span class="n">wybor</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Wybierz po jakich kolumnach filtrować dane: &quot;</span><span class="p">)</span>
+             <span class="nb">print</span><span class="p">()</span>
+             <span class="k">if</span><span class="p">(</span><span class="n">wybor</span><span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">):</span>
+                 <span class="k">break</span>
+             <span class="n">warunki</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wybor</span><span class="p">)</span>
+
+         <span class="n">prepare_conditions</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">kolumny</span><span class="p">,</span><span class="n">warunki</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p><strong>main()</strong></p></li>
+</ol>
+<p>W funkcji main zostały dodane instrukcje dla opcji “1” oraz “2”.
+Opcja “1” odpowiada za wygenerowanie raportu i wywołuje funkcję program(conn, wybor) przekazując jako argumenty połączenie do bazy danych conn oraz wartość opcji wybor.
+Opcja “2” odpowiada za wyświetlenie danych i również wywołuje funkcję program(conn, wybor) z odpowiednimi argumentami.
+W funkcji main po wykonaniu funkcji program(conn, wybor) zamykane jest połączenie do bazy danych.
+Aby uruchomić program, należy wcześniej zdefiniować funkcję program oraz upewnić się, że moduł simplejson jest importowany.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+ <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;database_creds.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">db_con_file</span><span class="p">:</span>
+     <span class="n">creds</span> <span class="o">=</span> <span class="n">simplejson</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">db_con_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+ <span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+     <span class="n">host</span><span class="o">=</span><span class="n">creds</span><span class="p">[</span><span class="s1">&#39;host_name&#39;</span><span class="p">],</span>
+     <span class="n">user</span><span class="o">=</span><span class="n">creds</span><span class="p">[</span><span class="s1">&#39;user_name&#39;</span><span class="p">],</span>
+     <span class="n">dbname</span><span class="o">=</span><span class="n">creds</span><span class="p">[</span><span class="s1">&#39;db_name&#39;</span><span class="p">],</span>
+     <span class="n">password</span><span class="o">=</span><span class="n">creds</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span>
+     <span class="n">port</span><span class="o">=</span><span class="n">creds</span><span class="p">[</span><span class="s1">&#39;port_number&#39;</span><span class="p">])</span>
+
+ <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;0. Wyjdź&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Wyświetl raport&quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Wyświetl dane&quot;</span><span class="p">)</span>
+     <span class="n">wybor</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Wybierz opcje: &quot;</span><span class="p">)</span>
+     <span class="nb">print</span><span class="p">()</span>
+     <span class="k">if</span><span class="p">(</span><span class="n">wybor</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">):</span>
+         <span class="k">break</span>
+     <span class="n">program</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">wybor</span><span class="p">)</span>
+
+ <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Sprawozdanie</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Spis Treści:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../rozdzial1.html">Rozdzial 1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rozdzial2.html">Rozdzial 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rozdzial3.html">Rozdzial 3</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Krzysztof Gora.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/Data-Base-raport-Main/source/dok_atp3.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

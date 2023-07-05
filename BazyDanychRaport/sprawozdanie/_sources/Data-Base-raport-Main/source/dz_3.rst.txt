@@ -1,0 +1,21 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Aplikacja do analizy danych
+========================================
+
+W funkcji main zostały dodane instrukcje: 
+
+1. Opcja "1" odpowiada za wyświetlenie na ekranie wykresów "Histogram pomiarów dla wszystkich adresów" oraz "wykres słupkowy - ilość pomiarów dla poszczególnych ulic"
+
+2. Opcja "2" odpowiada za wyświetlanie filtrowanych danych. Program zapyta nas jakie kolumny chcemy wyświetlić ("pomiar,date pomiaru, ulice, numer budynku, numer mieszkania"), możemy wybrać kilka kolumn, aby przejść dalej należy wybrać "0", następnie program zapyta nas po jakich kolumnach chcemy filtrować dane ("pomiar, data pomiaru, ulica, numer budynku, numer mieszkania"), możemy wybrać kilka kolumn, aby przejść dalej należy wybrać "0", następnie program odwołując się do naszego wyboru zapyta nas dla każdego oprócz ulicy, czy nasza wybrana kolumna ma być większa, mniejsza, równa po czym poprosi nas o podanie wartości do warunku. W przypadku filtrowania po ulicy musimy podać dokładną jej nazwę. Po odpowiedzeniu na wszyskie pytania wyświetli nam się dataframe z naszymi wynikami.
+
+
+
+.. toctree::
+   :maxdepth: 5
+   :caption: Contents:
+   
+

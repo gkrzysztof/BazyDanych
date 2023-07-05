@@ -1,0 +1,21 @@
+.. Sprawozdanie documentation master file, created by
+   sphinx-quickstart on Wed Apr 19 09:42:01 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Lokalizacja i struktura katalogów
+========================================
+
+
+.. important::
+   Tradycyjnie pliki konfiguracyjne i pliki danych używane przez klaster bazy danych są przechowywane razem w katalogu danych klastra, powszechnie określanym jako PGDATA
+.. note::
+   Typową lokalizacją dla PGDATA jest /var/lib/pgsql/data
+
+.. toctree::
+   pkt1_file
+   pkt1_folder
+   :maxdepth: 5
+   :caption: Contents:
+
+
